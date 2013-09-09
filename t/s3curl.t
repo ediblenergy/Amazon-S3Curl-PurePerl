@@ -46,6 +46,10 @@ ok $downloader->download;
 ok $downloader->delete, "delete remote file";
 
 ok my $should_die = Amazon::S3Curl::PurePerl->new(%pp_args, local_file => undef );
-$should_die->download;
+eval {
+    $should_die->download;
+    fail "should've died";
+};
+ok $@, "died without local_file param.";
 
 done_testing;

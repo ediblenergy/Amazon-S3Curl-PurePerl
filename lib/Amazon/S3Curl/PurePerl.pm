@@ -95,14 +95,14 @@ sub _req {
 
 
 
-sub download_args {
+sub download_cmd {
     my ($self) = @_;
     my $args = $self->_req('GET');
     push @$args, ( "-o", $self->local_file );
     return $args;
 }
 
-sub upload_args {
+sub upload_cmd {
     my ($self) = @_;
     my $url = $self->url;
     #trailing slash for upload means curl will plop on the filename at the end, ruining the hash signature.
@@ -115,7 +115,7 @@ sub upload_args {
     return $args;
 }
 
-sub delete_args {
+sub delete_cmd {
     my $args = shift->_req('DELETE');
     splice( @$args, $#$args, 0, -X  => 'DELETE' );
     return $args;
@@ -123,7 +123,7 @@ sub delete_args {
 
 sub _exec {
     my($self,$method) = @_;
-    my $meth = $method."_args";
+    my $meth = $method."_cmd";
     die "cannot $meth" unless $self->can($meth);
     my $args = $self->$meth;
     log_info { "running " . join( " ", @_ ) } @$args;
@@ -154,6 +154,3 @@ sub _local_file_required {
 before download => _local_file_required('download');
 before upload => _local_file_required('upload');
 1;
-
-__END__
-
