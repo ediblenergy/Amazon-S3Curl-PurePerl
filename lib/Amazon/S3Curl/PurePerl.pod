@@ -46,7 +46,15 @@ Using L<Object::Remote>:
 
 =item url ( required )
 
+This is the (url to download|upload to|delete).
+It should be a relative path with the bucket name, and whatever pseudopaths you want.
+
+For upload:
+Left with a trailing slash, it'll DWYM, curl style.
+
 =item local_file
+
+This is the (path to download to|file to upload).
 
 =back
 
