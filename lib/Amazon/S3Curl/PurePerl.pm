@@ -1,7 +1,11 @@
 package Amazon::S3Curl::PurePerl;
+#ABSTRACT: Amazon::S3Curl::PurePerl - Pure Perl s3 helper/downloader.
 use strict;
 use warnings FATAL => 'all';
 use Module::Runtime qw[ require_module ];
+
+our $VERSION = "0.03";
+$VERSION = eval $VERSION;
 
 #For instances when you want to use s3, but don't want to install anything. ( and you have curl )
 #Amazon S3 Authentication Tool for Curl
