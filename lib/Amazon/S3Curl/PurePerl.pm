@@ -2,11 +2,13 @@ package Amazon::S3Curl::PurePerl;
 use strict;
 use warnings FATAL => 'all';
 use Module::Runtime qw[ require_module ];
-use Devel::SimpleTrace;
-#ABSTRACT: Pure Perl s3 helper; generate params to pass to curl
+
 #For instances when you want to use s3, but don't want to install anything. ( and you have curl )
+#Amazon S3 Authentication Tool for Curl
+#Copyright 2006-2010 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
 use Moo;
 use POSIX;
+use File::Spec;
 use Log::Contextual qw[ :log :dlog set_logger ];
 use Log::Contextual::SimpleLogger;
 use Digest::SHA::PurePerl;
@@ -44,7 +46,6 @@ for (
     aws_access_key
     aws_secret_key
     url
-    local_file
     ] )
 {
     has $_ => (
@@ -54,11 +55,19 @@ for (
 
 }
 
+has local_file => ( 
+    is => 'ro',
+    required => 1,
+    predicate => 1,
+);
+
+
 sub _req {
-    my ( $self, $method ) = @_;
-    $method ||= "GET";
-    my $resource = $self->url;
-    my $to_sign  = $self->url;
+    my ( $self, $method, $url ) = @_;
+    die "method required" unless $method;
+    $url ||= $self->url;
+    my $resource = $url;
+    my $to_sign  = $url;
     $resource = "http://s3.amazonaws.com" . $resource;
     my $keyId       = $self->aws_access_key;
     my $httpDate    = POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0000", gmtime );
@@ -84,22 +93,67 @@ sub _req {
 }
 
 
-sub download {
+
+
+sub download_args {
     my ($self) = @_;
     my $args = $self->_req('GET');
     push @$args, ( "-o", $self->local_file );
-    log_info { "running: " . join( " ", @_ ) } @$args;
+    return $args;
+}
+
+sub upload_args {
+    my ($self) = @_;
+    my $url = $self->url;
+    #trailing slash for upload means curl will plop on the filename at the end, ruining the hash signature.
+    if ( $url =~ m|/$| ) {
+        my $file_name = ( File::Spec->splitpath( $self->local_file ) )[-1];
+        $url .= $file_name;
+    }
+    my $args = $self->_req('PUT',$url);
+    splice( @$args, $#$args, 0, "-T", $self->local_file );
+    return $args;
+}
+
+sub delete_args {
+    my $args = shift->_req('DELETE');
+    splice( @$args, $#$args, 0, -X  => 'DELETE' );
+    return $args;
+}
+
+sub _exec {
+    my($self,$method) = @_;
+    my $meth = $method."_args";
+    die "cannot $meth" unless $self->can($meth);
+    my $args = $self->$meth;
+    log_info { "running " . join( " ", @_ ) } @$args;
     capture(@$args);
-    return $self->local_file;
+    return 1;
+}
+
+sub download {
+    return shift->_exec("download");
 }
 
 sub upload {
-    my ($self) = @_;
-    my $args = $self->_req('PUT');
-    splice( @$args, $#$args, 0, "-T", $self->local_file );
-    log_info { "running: " . join( " ", @_ ) } @$args;
-    capture(@$args);
-    return $self->local_file;
+    return shift->_exec("upload");
 }
 
+sub delete {
+    return shift->_exec("delete");
+}
+
+sub _local_file_required {
+    my $method = shift;
+    sub {
+        die "parameter local_file required for $method"
+          unless shift->local_file;
+    };
+}
+
+before download => _local_file_required('download');
+before upload => _local_file_required('upload');
 1;
+
+__END__
+

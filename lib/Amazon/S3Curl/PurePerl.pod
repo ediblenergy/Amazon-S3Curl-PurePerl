@@ -1,0 +1,45 @@
+=head1 NAME
+
+Amazon::S3Curl::PurePerl - Pure Perl s3 helper/downloader
+
+=head1 DESCRIPTION
+
+Adapted from L<Amazon S3 Authentication Tool for Curl|http://aws.amazon.com/code/128>,
+
+This software is designed to run in low dependency situations. 
+You need curl, and you need perl ( If you are on linux, you probably have perl whether you know it or not ).
+
+Maybe you're bootstrapping a system from s3,
+or downloading software to a host where you can't/don't want to install anything.
+
+=head1 SYNOPSIS
+
+    use Object::Remote;
+    my $conn = Object::Remote->connect("webserver-3");
+
+    my $s3_downloader = Amazon::S3Curl::PurePerl->new::on(
+        $conn,
+        {
+            aws_access_key => $ENV{AWS_ACCESS_KEY},
+            aws_secret_key => $ENV{AWS_SECRET_KEY},
+            local_file     => "/tmp/myapp.tgz",
+            url            => "/mybootstrap-files/myapp.tgz"
+        } );
+
+    $s3_downloader->download;
+
+=head1 METHODS
+
+=head2 download
+
+    download url to local_file.
+
+=head2 upload
+
+    Upload local_file to url.
+
+=head2 delete
+
+    Delete url.
+
+
