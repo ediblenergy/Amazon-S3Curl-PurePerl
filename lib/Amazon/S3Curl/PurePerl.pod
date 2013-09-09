@@ -4,8 +4,6 @@ Amazon::S3Curl::PurePerl - Pure Perl s3 helper/downloader
 
 =head1 DESCRIPTION
 
-Adapted from L<Amazon S3 Authentication Tool for Curl|http://aws.amazon.com/code/128>,
-
 This software is designed to run in low dependency situations. 
 You need curl, and you need perl ( If you are on linux, you probably have perl whether you know it or not ).
 
@@ -42,4 +40,14 @@ or downloading software to a host where you can't/don't want to install anything
 
     Delete url.
 
+=head1 LICENSE
 
+This library is free software and may be distributed under the same terms as perl itself.
+
+=head1 AUTHOR AND CONTRIBUTORS
+
+This distribution was 
+adapted by Samuel Kaufman L<skaufman@cpan.org> from the L<Amazon S3 Authentication Tool for Curl|http://aws.amazon.com/code/128>
+
+   Amazon S3 Authentication Tool for Curl
+   Copyright 2006-2010 Amazon.com, Inc. or its affiliates. All Rights Reserved.
