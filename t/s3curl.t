@@ -51,5 +51,10 @@ eval {
     fail "should've died";
 };
 ok $@, "died without local_file param.";
+my $ret1 = system(@{ $uploader->upload_cmd });
+my $ret2 = system(@{ $downloader->download_cmd });
+diag $ret1;
+ok !$ret1,"uploaded using upload_cmd => system";
+ok !$ret2,"downloaded using download_cmd => system";
 
 done_testing;
