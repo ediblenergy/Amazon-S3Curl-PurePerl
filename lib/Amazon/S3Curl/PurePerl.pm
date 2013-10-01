@@ -266,7 +266,7 @@ Delete url.
 
 Just get the command to execute, don't actually execute it:
     my $cmd = $s3curl->download_cmd;
-    `$cmd`;
+    system(@$cmd);
 
 =head1 LICENSE
 
