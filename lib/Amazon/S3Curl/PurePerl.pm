@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use Module::Runtime qw[ require_module ];
 
-our $VERSION = "0.03";
+our $VERSION = "0.01";
 $VERSION = eval $VERSION;
 
 #For instances when you want to use s3, but don't want to install anything. ( and you have curl )
@@ -18,8 +18,6 @@ use Log::Contextual::SimpleLogger;
 use Digest::SHA::PurePerl;
 use MIME::Base64 qw(encode_base64);
 use IPC::System::Simple qw[ capture ];
-use constant STAT_MODE => 2;
-use constant STAT_UID  => 4;
 our $DIGEST_HMAC;
 BEGIN {
     eval {
@@ -65,6 +63,19 @@ has local_file => (
     predicate => 1,
 );
 
+has static_http_date => (
+    is => 'ro',
+    required => 0,
+);
+
+has http_date => (
+    is => 'lazy',
+    clearer => 1,
+);
+
+sub _build_http_date {
+    POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0000", gmtime );
+}
 
 sub _req {
     my ( $self, $method, $url ) = @_;
@@ -74,7 +85,8 @@ sub _req {
     my $to_sign  = $url;
     $resource = "http://s3.amazonaws.com" . $resource;
     my $keyId       = $self->aws_access_key;
-    my $httpDate    = POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0000", gmtime );
+    $self->clear_http_date;
+    my $httpDate    = $self->static_http_date || $self->http_date;
     my $contentMD5  = "";
     my $contentType = "";
     my $xamzHeadersToSign = "";
