@@ -9,7 +9,7 @@ my $download_file = File::Temp->new;
 my $upload_file = File::Temp->new;
 $upload_file->autoflush(1);
 die 'you need $ENV{AWS_ACCESS_KEY} and $ENV{AWS_SECRET_KEY}  and $ENV{S3_TEST_BUCKET} for the live tests.'
-  unless $ENV{AWS_ACCESS_KEY} && $ENV{AWS_SECRET_KEY};
+  unless $ENV{AWS_ACCESS_KEY} && $ENV{AWS_SECRET_KEY} && $ENV{S3_TEST_BUCKET};
 
 my $filename = (File::Spec->splitpath($upload_file))[-1];
 
