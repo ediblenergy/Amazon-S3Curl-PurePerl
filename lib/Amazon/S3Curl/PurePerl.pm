@@ -40,7 +40,7 @@ set_logger(
 
 has curl => (
     is      => 'ro',
-    default => sub { 'curl' }    #maybe your curl isnt in path?
+    default => sub { 'curl' }    #maybe your curl isnt in PATH?
 );
 
 for (
@@ -68,12 +68,8 @@ has static_http_date => (
     required => 0,
 );
 
-has http_date => (
-    is => 'lazy',
-    clearer => 1,
-);
 
-sub _build_http_date {
+sub http_date {
     POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0000", gmtime );
 }
 
@@ -85,7 +81,6 @@ sub _req {
     my $to_sign  = $url;
     $resource = "http://s3.amazonaws.com" . $resource;
     my $keyId       = $self->aws_access_key;
-    $self->clear_http_date;
     my $httpDate    = $self->static_http_date || $self->http_date;
     my $contentMD5  = "";
     my $contentType = "";
@@ -133,17 +128,17 @@ sub upload_cmd {
 
 sub delete_cmd {
     my $args = shift->_req('DELETE');
-    splice( @$args, $#$args, 0, -X  => 'DELETE' );
+    splice( @$args, $#$args, 0, qw[ -X DELETE ] );
     return $args;
 }
 
 sub head_cmd {
     my $args = shift->_req('HEAD');
-    splice( @$args, $#$args, 0, "-I", -X  => 'HEAD' );
+    splice( @$args, $#$args, 0, qw[ -I -X HEAD ] );
     return $args;
 }
 
-sub file_exists {
+sub url_exists {
     my $self = shift;
     my @args = grep { !/-f/ } @{ $self->head_cmd }; #take out fail mode, want to parse and look for the 404.
     log_info { "running " . join( " ", @_ ) } @args;
@@ -151,9 +146,6 @@ sub file_exists {
     die "no output received!" unless @output;
     return 1 if $output[0] =~ /200 OK/;
     return 0 if $output[0] =~ /404 Not Found/;
-    for(@output) {
-        warn "output: $_";
-    }
 }
 
 sub _exec {
