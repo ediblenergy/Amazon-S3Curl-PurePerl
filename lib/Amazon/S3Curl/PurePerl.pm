@@ -59,7 +59,7 @@ for (
 
 has local_file => ( 
     is => 'ro',
-    required => 1,
+    required => 0,
     predicate => 1,
 );
 
@@ -137,6 +137,25 @@ sub delete_cmd {
     return $args;
 }
 
+sub head_cmd {
+    my $args = shift->_req('HEAD');
+    splice( @$args, $#$args, 0, "-I", -X  => 'HEAD' );
+    return $args;
+}
+
+sub file_exists {
+    my $self = shift;
+    my @args = grep { !/-f/ } @{ $self->head_cmd }; #take out fail mode, want to parse and look for the 404.
+    log_info { "running " . join( " ", @_ ) } @args;
+    my @output = capture( @args );
+    die "no output received!" unless @output;
+    return 1 if $output[0] =~ /200 OK/;
+    return 0 if $output[0] =~ /404 Not Found/;
+    for(@output) {
+        warn "output: $_";
+    }
+}
+
 sub _exec {
     my($self,$method) = @_;
     my $meth = $method."_cmd";
@@ -157,6 +176,10 @@ sub upload {
 
 sub delete {
     return shift->_exec("delete");
+}
+
+sub head {
+    return shift->_exec("head");
 }
 
 sub _local_file_required {

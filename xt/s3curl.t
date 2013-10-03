@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Amazon::S3Curl::PurePerl;
 use File::Temp;
 use File::Spec;
@@ -26,7 +26,9 @@ my %pp_args = (
 ok my $uploader = Amazon::S3Curl::PurePerl->new(%pp_args),
   "instantiated uploader";
 
+ok !$uploader->file_exists, "file does not exist yet.";
 ok $uploader->upload, "uploaded file";
+ok $uploader->file_exists, "file exists.";
 
 ok my $downloader = Amazon::S3Curl::PurePerl->new(
     %pp_args, 
