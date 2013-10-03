@@ -279,7 +279,8 @@ Delete url.
 
 =head2 upload_cmd
 
-Just get the command to execute, don't actually execute it:
+Just get the command to execute in the form of an arrayref, don't actually execute it:
+
     my $cmd = $s3curl->download_cmd;
     system(@$cmd);
 
