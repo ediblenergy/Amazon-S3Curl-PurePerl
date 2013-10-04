@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use Module::Runtime qw[ require_module ];
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 $VERSION = eval $VERSION;
 
 #For instances when you want to use s3, but don't want to install anything. ( and you have curl )
@@ -146,6 +146,7 @@ sub url_exists {
     die "no output received!" unless @output;
     return 1 if $output[0] =~ /200 OK/;
     return 0 if $output[0] =~ /404 Not Found/;
+    die "url_exists did not find a 200 or 404: $output[0]";
 }
 
 sub _exec {
@@ -283,6 +284,10 @@ Just get the command to execute in the form of an arrayref, don't actually execu
 
     my $cmd = $s3curl->download_cmd;
     system(@$cmd);
+
+=head2 url_exists
+
+Check to see if a given url returns a 404 or 200. return 1 if 200, return 0 if 404, die otherwise.
 
 =head1 LICENSE
 
