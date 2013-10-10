@@ -47,7 +47,6 @@ for (
     qw[
     aws_access_key
     aws_secret_key
-    url
     ] )
 {
     has $_ => (
@@ -56,6 +55,14 @@ for (
     );
 
 }
+
+has url => (
+    is => 'ro',
+    required => 1,
+    isa => sub {
+        $_[0] =~ m|^/| or die "$_[0] is not a relative url. Should be /bucketname/file"
+      },
+);
 
 has local_file => ( 
     is => 'ro',
