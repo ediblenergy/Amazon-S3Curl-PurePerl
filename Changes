@@ -1,5 +1,7 @@
 Revision history for perl module Amazon::S3Curl::PurePerl
 
+    - Added -http1.0 flag for working from behind a proxy.
+
 0.03 2013-10-04
 
     - url_exists method added.
