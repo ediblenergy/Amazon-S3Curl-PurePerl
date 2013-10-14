@@ -106,6 +106,7 @@ sub _req {
         -H => "content-type: $contentType",
         "-L",
         "-f",
+        "--http1.0",
         $resource,
     ];
 }
