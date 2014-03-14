@@ -1,6 +1,8 @@
 Revision history for perl module Amazon::S3Curl::PurePerl
 
-    - Added -http1.0 flag for working from behind a proxy.
+0.04 2014-03-04
+
+    - added in support for $ENV{AMAZON_S3CURL_PUREPERL_SCHEME_HOST}, instead of hardcoded 'http://s3.amazonaws.com'
 
 0.03 2013-10-04
 
