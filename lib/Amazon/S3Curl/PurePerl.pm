@@ -18,7 +18,7 @@ use Log::Contextual::SimpleLogger;
 use Digest::SHA::PurePerl;
 use MIME::Base64 qw(encode_base64);
 use IPC::System::Simple qw[ capture ];
-our $DIGEST_HMAC;
+my $DIGEST_HMAC;
 BEGIN {
     eval {
         require_module("Digest::HMAC");
@@ -75,6 +75,15 @@ has static_http_date => (
     required => 0,
 );
 
+has s3_scheme_host_url => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $env_var = $ENV{AMAZON_S3CURL_PUREPERL_SCHEME_HOST};
+        return $env_var if defined $env_var;
+        return 'http://s3.amazonaws.com'
+    }
+);
 
 sub http_date {
     POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0000", gmtime );
@@ -84,9 +93,8 @@ sub _req {
     my ( $self, $method, $url ) = @_;
     die "method required" unless $method;
     $url ||= $self->url;
-    my $resource = $url;
     my $to_sign  = $url;
-    $resource = "http://s3.amazonaws.com" . $resource;
+    my $resource = sprintf( "%s%s" , $self->s3_scheme_host_url, $url );
     my $keyId       = $self->aws_access_key;
     my $httpDate    = $self->static_http_date || $self->http_date;
     my $contentMD5  = "";
@@ -106,7 +114,6 @@ sub _req {
         -H => "content-type: $contentType",
         "-L",
         "-f",
-        "--http1.0",
         $resource,
     ];
 }
