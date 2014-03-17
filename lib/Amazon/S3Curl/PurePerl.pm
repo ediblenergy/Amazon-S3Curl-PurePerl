@@ -81,7 +81,7 @@ has s3_scheme_host_url => (
     default => sub {
         my $env_var = $ENV{AMAZON_S3CURL_PUREPERL_SCHEME_HOST};
         return $env_var if defined $env_var;
-        return 'http://s3.amazonaws.com'
+        return 'https://s3.amazonaws.com'
     }
 );
 
