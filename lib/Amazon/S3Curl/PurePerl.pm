@@ -114,6 +114,8 @@ sub _req {
         -H => "content-type: $contentType",
         "-L",
         "-f",
+        '--no-sslv2',
+        '--no-sslv3',
         $resource,
     ];
 }
