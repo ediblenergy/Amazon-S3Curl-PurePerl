@@ -1,5 +1,6 @@
 Revision history for perl module Amazon::S3Curl::PurePerl
 
+{{$NEXT}}
 
     - removed my --no-sslv2 and 3, it didn't work properly.
 
