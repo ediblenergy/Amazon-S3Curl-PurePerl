@@ -1,5 +1,8 @@
 Revision history for perl module Amazon::S3Curl::PurePerl
 
+
+    - removed my --no-sslv2 and 3, it didn't work properly.
+
 0.052 2014-10-16
 
     - explicitly disallow SSL3 and SSL2. ( in response to POODLE )
