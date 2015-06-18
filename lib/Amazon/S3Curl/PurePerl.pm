@@ -6,7 +6,7 @@ use warnings;
 
 use Module::Runtime qw[ require_module ];
 
-our $VERSION = "0.052";
+our $VERSION = "0.054";
 $VERSION = eval $VERSION;
 
 #For instances when you want to use s3, but don't want to install anything. ( and you have curl )
